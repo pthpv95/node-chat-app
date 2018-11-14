@@ -8,11 +8,12 @@
     "start": "node server/server.js"
   },
   "engines": {
-    "node": "6.2.2"
+    "node": "10.9.0"
   },
   "author": "lee-p",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "socket.io": "^2.1.1"
   }
 }
