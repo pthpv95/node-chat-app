@@ -1,22 +1,35 @@
 <html>
   <head>
     Node Chat App
+    <style>
+      body {
+        background-color: linen;
+      }
+
+      /* #chat-room {
+        border: 2px solid white;
+        border-radius: 5px;
+      } */
+    </style>
   </head>
 
   <body>
+    <h3 id="show-greeting"></h3>
     <h4>Welcome to chat app</h4>
-
+    <h3>Chat room</h3>
+    <div id="chat-room" style="border-radius: 0cm"></div>
+    <div>
+      <form>
+        <label>Content : </label><input type="text" id="text" />
+        <button id="btn-send" type="submit">Send</button> <br />
+        <br />
+      </form>
+      <!--
+        <label>Username: </label><input type="text" id="username" value="" />
+      -->
+    </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-
-      socket.on("connect", () => {
-        console.log("Connected to server.");
-      });
-
-      socket.on("disconnect", () => {
-        console.log("Disconnected from server");
-      });
-    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./js/index.js"></script>
   </body>
 </html>

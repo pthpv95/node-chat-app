@@ -15,6 +15,19 @@ io.on("connection", socket => {
   socket.on("disconnect", () => {
     console.log("User was disconnected!");
   });
+
+  socket.emit("newNoti", {
+    content: "best deal black friday",
+    createdAt: new Date().getTime()
+  });
+
+  socket.on("sendMessage", message => {
+    console.log("New message:", );
+    io.emit("newMessage", {
+      ...message,
+      createdAt: new Date().getTime()
+    });
+  });
 });
 
 app.use(express.static(publicPath));
