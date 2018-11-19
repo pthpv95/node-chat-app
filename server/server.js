@@ -10,7 +10,7 @@ const http = require("http");
 var server = http.createServer(app);
 var io = socketIO(server);
 
-var { generateMessage } = require("./utils/message");
+var { generateMessage, generateLocationMessage } = require("./utils/message");
 
 io.on("connection", socket => {
   console.log("new connection");
@@ -30,10 +30,18 @@ io.on("connection", socket => {
     generateMessage("Admin", "new user has joined")
   );
 
-  socket.on("sendMessage", message => {
-    console.log("New message:");
-    io.emit("newMessage", generateMessage(message.from, message.text));
+  socket.on("createLocationMessage", coords => {
+    const message = generateLocationMessage(
+      "Admin",
+      coords.latitude,
+      coords.longitude
+    );
+    io.emit("newLocationMessage", message);
+  });
 
+  socket.on("createMessage", (message, callback) => {
+    io.emit("newMessage", generateMessage(message.from, message.text));
+    callback();
     // socket.broadcast.emit("newMessage", {
     //   text: "new product launch",
     //   createdAt: new Date().getTime()

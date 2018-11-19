@@ -1,44 +1,67 @@
 var socket = io();
 
-socket.on("connect", () => {
-  console.log("Connected to server.");
+socket.on("connect", function() {
+  console.log("Connected to server");
 });
 
-socket.on("disconnect", () => {
+socket.on("disconnect", function() {
   console.log("Disconnected from server");
 });
 
-socket.on("newNoti", response => {
-  console.log(response);
+socket.on("newMessage", function(message) {
+  console.log("newMessage", message);
+  var li = jQuery("<li></li>");
+  li.text(`${message.from}: ${message.text}`);
+
+  jQuery("#messages").append(li);
 });
 
-socket.on("newMessage", message => {
-  const string = `<b>${message.from}</b>: ${message.text} <br/>`;
-  $("#chat-room").append(string);
+socket.on("newLocationMessage", function(message) {
+  var li = jQuery("<li></li>");
+  var a = jQuery('<a target="_blank">My current location</a>');
+
+  li.text(`${message.from}: `);
+  a.attr("href", message.url);
+  li.append(a);
+  jQuery("#messages").append(li);
 });
 
-this.username = "guest-" + Math.floor(Math.random() * 100 + 1);
-// (function init() {
-//   this.username = window.prompt("What should I call you, mate?");
-//   document.getElementById("show-greeting").value = "Hi " + this.username + ",";
-// })();
-
-document.getElementById("btn-send").addEventListener("click", e => {
+jQuery("#message-form").on("submit", function(e) {
   e.preventDefault();
-  // if (this.username === undefined) {
-  //   this.username = window.prompt(
-  //     "Want to change your name or just keep anonymous ?"
-  //   );
-  // } else {
-  //   this.username = "anonymous";
-  // }
 
-  var textElement = document.getElementById("text");
-  socket.emit("sendMessage", {
-    from: this.username,
-    text: textElement.value
-  });
+  var messageTextbox = jQuery("[name=message]");
 
-  textElement.value = "";
+  socket.emit(
+    "createMessage",
+    {
+      from: "User",
+      text: messageTextbox.val()
+    },
+    function() {
+      messageTextbox.val("");
+    }
+  );
 });
 
+var locationButton = jQuery("#send-location");
+locationButton.on("click", function() {
+  if (!navigator.geolocation) {
+    return alert("Geolocation not supported by your browser.");
+  }
+
+  locationButton.attr("disabled", "disabled").text("Sending location...");
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      locationButton.removeAttr("disabled").text("Send location");
+      socket.emit("createLocationMessage", {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      });
+    },
+    function() {
+      locationButton.removeAttr("disabled").text("Send location");
+      alert("Unable to fetch location.");
+    }
+  );
+});
