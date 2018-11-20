@@ -40,12 +40,19 @@ const hasDigit = createValidation(
   "Should contain at least one digit"
 );
 
+const isValidString = a => typeof a === "string" && a.trim().length > 0;
+
 const formValues = {
   email: createEmail("foo@"),
   phone: createPhone("987654321"),
   userName: [createUserName("UserA"), hasDigit("1User A")]
 };
 
-const errors = validateFormValues(formValues, undefined, a => null);
+// const errors = validateFormValues(formValues, undefined, a => null);
 
-console.log(JSON.stringify(errors, null, 4));
+// console.log(JSON.stringify(errors, null, 4));
+
+module.exports = {
+  validateFormValues,
+  isValidString
+};
