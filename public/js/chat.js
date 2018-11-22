@@ -15,6 +15,18 @@ socket.on("connect", function() {
   });
 });
 
+socket.on("updateUserList", function(users) {
+  console.log(users);
+
+  var ol = $("<ol></ol>");
+
+  users.map(item => {
+    ol.append(`<li>${item}</li>`);
+  });
+
+  $("#users").html(ol);
+});
+
 socket.on("disconnect", function() {
   console.log("Disconnected from server");
 });
