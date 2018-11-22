@@ -47,9 +47,12 @@ io.on("connection", socket => {
 
     var user = users.removeUser(socket.id);
 
-    if(user){
-      io.to(user.room).emit('updateUserList', users.getUserList(user.room));
-      io.to(user.room).emit('newMessage',generateMessage('Admin', `${user.name} has left the room.`))
+    if (user) {
+      io.to(user.room).emit("updateUserList", users.getUserList(user.room));
+      io.to(user.room).emit(
+        "newMessage",
+        generateMessage("Admin", `${user.name} has left the room.`)
+      );
     }
   });
 
@@ -65,16 +68,27 @@ io.on("connection", socket => {
   // );
 
   socket.on("createLocationMessage", coords => {
-    const message = generateLocationMessage(
-      "Admin",
-      coords.latitude,
-      coords.longitude
-    );
-    io.emit("newLocationMessage", message);
+    var user = users.getUser(socket.id);
+
+    if (user && coords) {
+      const message = generateLocationMessage(
+        user.name,
+        coords.latitude,
+        coords.longitude
+      );
+      io.emit("newLocationMessage", message);
+    }
   });
 
   socket.on("createMessage", (message, callback) => {
-    io.emit("newMessage", generateMessage(message.from, message.text));
+    var user = users.getUser(socket.id);
+
+    if (user && isValidString(message.text)) {
+      io.to(user.room).emit(
+        "newMessage",
+        generateMessage(user.name, message.text)
+      );
+    }
     callback();
   });
 });
