@@ -94,4 +94,6 @@ io.on("connection", socket => {
 });
 
 app.use(express.static(publicPath));
-server.listen(port);
+server.listen(port, () => {
+  console.log(`Running on http://localhost:${port}`);
+});
