@@ -11,12 +11,18 @@ var server = http.createServer(app);
 var io = socketIO(server);
 var { isValidString } = require("./utils/validation");
 const { Users } = require("./utils/users");
+const { Rooms } = require("./utils/rooms");
+var rooms = new Rooms();
 var users = new Users();
 
 var { generateMessage, generateLocationMessage } = require("./utils/message");
 
 io.on("connection", socket => {
-  console.log("new connection");
+  console.log("new connection" + new Date());
+
+  const onlineRooms = rooms.getRooms();
+  console.log("onlineRooms", onlineRooms);
+  io.emit("updateRoomList", onlineRooms);
 
   socket.on("join", (params, callback) => {
     if (!isValidString(params.name)) {
@@ -25,7 +31,9 @@ io.on("connection", socket => {
     socket.join(params.room);
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, params.room);
+    rooms.addRoom(params.room);
 
+    io.emit("updateRoomList", onlineRooms);
     io.to(params.room).emit("updateUserList", users.getUserList(params.room));
     socket.emit(
       "newMessage",
@@ -44,8 +52,11 @@ io.on("connection", socket => {
 
   socket.on("disconnect", () => {
     console.log("User was disconnected!");
-
     var user = users.removeUser(socket.id);
+    var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
+    if (!hasUserInRoom) {
+      rooms.removeRoom(user.room);
+    }
 
     if (user) {
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
