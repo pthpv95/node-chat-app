@@ -54,7 +54,8 @@ io.on("connection", socket => {
     console.log("User was disconnected!");
     var user = users.removeUser(socket.id);
     var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
-    if (!hasUserInRoom) {
+
+    if (hasUserInRoom) {
       rooms.removeRoom(user.room);
     }
 
