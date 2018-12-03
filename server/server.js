@@ -53,13 +53,13 @@ io.on("connection", socket => {
   socket.on("disconnect", () => {
     console.log("User was disconnected!");
     var user = users.removeUser(socket.id);
-    var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
-
-    if (hasUserInRoom) {
-      rooms.removeRoom(user.room);
-    }
 
     if (user) {
+      var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
+      if (hasUserInRoom) {
+        rooms.removeRoom(user.room);
+      }
+
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
       io.to(user.room).emit(
         "newMessage",
