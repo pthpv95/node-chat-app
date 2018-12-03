@@ -58,6 +58,7 @@ io.on("connection", socket => {
       var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
       if (hasUserInRoom) {
         rooms.removeRoom(user.room);
+        io.emit("updateRoomList", onlineRooms);
       }
 
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
