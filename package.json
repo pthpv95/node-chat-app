@@ -9,7 +9,7 @@
     "start": "node server/server.js"
   },
   "engines": {
-    "node": ">=6"
+    "node": "8.9.2"
   },
   "author": "lee-p",
   "license": "ISC",
