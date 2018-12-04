@@ -15,8 +15,9 @@ class Rooms {
     return this.rooms;
   }
 
-  removeRoom(id) {
-    this.rooms.filter(x => x.id !== id);
+  removeRoom(name) {
+    this.rooms = this.rooms.filter(x => x.name !== name);
+    return this.rooms;
   }
 }
 

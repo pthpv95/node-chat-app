@@ -21,7 +21,6 @@ io.on("connection", socket => {
   console.log("new connection" + new Date());
 
   const onlineRooms = rooms.getRooms();
-  console.log("onlineRooms", onlineRooms);
   io.emit("updateRoomList", onlineRooms);
 
   socket.on("join", (params, callback) => {
@@ -33,7 +32,6 @@ io.on("connection", socket => {
     users.addUser(socket.id, params.name, params.room);
     rooms.addRoom(params.room);
 
-    io.emit("updateRoomList", onlineRooms);
     io.to(params.room).emit("updateUserList", users.getUserList(params.room));
     socket.emit(
       "newMessage",
@@ -57,8 +55,8 @@ io.on("connection", socket => {
     if (user) {
       var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
       if (hasUserInRoom) {
-        rooms.removeRoom(user.room);
-        io.emit("updateRoomList", onlineRooms);
+        var remainingRooms = rooms.removeRoom(user.room);
+        io.emit("updateRoomList", remainingRooms);
       }
 
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
@@ -68,11 +66,6 @@ io.on("connection", socket => {
       );
     }
   });
-
-  // socket.emit(
-  //   "newMessage",
-  //   generateMessage("admin", "welcome to the chat app")
-  // );
 
   // // broadcast for everyone but this user
   // socket.broadcast.emit(
