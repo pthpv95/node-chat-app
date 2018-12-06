@@ -31,6 +31,10 @@ socket.on("disconnect", function() {
   console.log("Disconnected from server");
 });
 
+socket.on("updateRoomList", result => {
+  console.log(result);
+});
+
 function scrollToBottom() {
   //selectors
   var messages = $("#messages");

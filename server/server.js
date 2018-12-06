@@ -18,8 +18,6 @@ var users = new Users();
 var { generateMessage, generateLocationMessage } = require("./utils/message");
 
 io.on("connection", socket => {
-  console.log("new connection" + new Date());
-
   const onlineRooms = rooms.getRooms();
   io.emit("updateRoomList", onlineRooms);
 
@@ -30,8 +28,8 @@ io.on("connection", socket => {
     socket.join(params.room);
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, params.room);
-    rooms.addRoom(params.room);
-
+    var newRooms = rooms.addRoom(params.room, socket.id);
+    io.emit("updateRoomList", newRooms);
     io.to(params.room).emit("updateUserList", users.getUserList(params.room));
     socket.emit(
       "newMessage",
@@ -53,11 +51,13 @@ io.on("connection", socket => {
     var user = users.removeUser(socket.id);
 
     if (user) {
-      var hasUserInRoom = onlineRooms.find(x => x.name === user.room);
-      if (hasUserInRoom) {
-        var remainingRooms = rooms.removeRoom(user.room);
-        io.emit("updateRoomList", remainingRooms);
+      rooms.removeLeftUserInRoom(user.room, user.id);
+      if (rooms.checkRoomStatus(user.room) === "EMPTY_ROOM") {
+        rooms.removeRoom(user.room);
       }
+
+      var roomList = rooms.getRooms();
+      io.emit("updateRoomList", roomList);
 
       io.to(user.room).emit("updateUserList", users.getUserList(user.room));
       io.to(user.room).emit(
