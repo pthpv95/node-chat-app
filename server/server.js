@@ -8,7 +8,9 @@ var port = process.env.PORT || 3000;
 
 const http = require("http");
 var server = http.createServer(app);
-var io = socketIO(server);
+var io = socketIO(server, {
+  pingTimeout: 60000
+});
 var { isValidString } = require("./utils/validation");
 const { Users } = require("./utils/users");
 const { Rooms } = require("./utils/rooms");
