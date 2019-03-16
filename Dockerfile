@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:alpine
 
 WORKDIR /usr/src/app
 
@@ -11,6 +11,5 @@ RUN npm install
 COPY . .
 
 EXPOSE 3000
-EXPOSE 5858
 
 CMD ["npm","start"]
